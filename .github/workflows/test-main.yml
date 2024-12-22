@@ -26,6 +26,7 @@ jobs:
         run: |
           echo "$SSH_KEY" > private_key
           chmod 600 private_key
+          mkdir -p ~/.ssh
           ssh-keyscan -p 65002 217.196.55.186 >> ~/.ssh/known_hosts
           scp -P 65002 -i private_key main.c u691780200@217.196.55.186:/home/u691780200/public_html/
           rm private_key
