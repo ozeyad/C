@@ -32,5 +32,5 @@ jobs:
         run: |
           echo "$SSH_KEY" > private_key
           chmod 600 private_key
-          scp -i private_key main.c u691780200@ozeyad.com:/home/u691780200/public_html/
+          scp -P 65002 -i private_key main.c u691780200@217.196.55.186:/home/u691780200/public_html/
           rm private_key
