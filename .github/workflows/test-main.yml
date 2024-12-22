@@ -1,4 +1,4 @@
-name: C Code Testing Pipeline
+name: C Code Testing and Deployment Pipeline
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,3 +25,12 @@ jobs:
       - name: Run main.c Program
         run: ./main
 
+      - name: Deploy main.c to Hostinger
+        if: success()
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          echo "$SSH_KEY" > private_key
+          chmod 600 private_key
+          scp -i private_key main.c u691780200@ozeyad.com:/home/u691780200/public_html/
+          rm private_key
