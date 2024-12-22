@@ -1,10 +1,7 @@
-name: C Code Testing and Deployment Pipeline
+name: Deploy main.c to Hostinger
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
@@ -14,34 +11,21 @@ jobs:
 
     steps:
       # Step 1: Checkout the code
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      # Step 2: Install GCC and Required Tools
-      - name: Install GCC and Required Tools
-        run: sudo apt-get update && sudo apt-get install -y build-essential
-
-      # Step 3: Compile the code
-      - name: Compile main.c
-        run: gcc -o main main.c -Wall
-
-      # Step 4: Run the program
-      - name: Run main.c Program
-        run: ./main
-
-      # Step 5: Add Host Key to Known Hosts
-      - name: Add Hostinger Host Key
+      # Step 2: Compile and Run main.c
+      - name: Build and Test main.c
         run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -p 65002 217.196.55.186 >> ~/.ssh/known_hosts
+          gcc -o main main.c -Wall
+          ./main
 
-      # Step 6: Deploy to Hostinger via SSH
-      - name: Deploy main.c to Hostinger
-        if: success()
+      # Step 3: Deploy to Hostinger
+      - name: Deploy to Hostinger
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
         run: |
           echo "$SSH_KEY" > private_key
           chmod 600 private_key
+          ssh-keyscan -p 65002 217.196.55.186 >> ~/.ssh/known_hosts
           scp -P 65002 -i private_key main.c u691780200@217.196.55.186:/home/u691780200/public_html/
           rm private_key
